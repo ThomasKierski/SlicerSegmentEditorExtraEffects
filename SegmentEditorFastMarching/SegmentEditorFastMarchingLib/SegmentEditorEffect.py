@@ -253,14 +253,19 @@ The effect uses <a href="http://www.spl.harvard.edu/publications/item/view/193">
     # If original segment is available then restore that
     if self.originalSelectedSegmentLabelmap:
       import vtkSegmentationCorePython as vtkSegmentationCore
+      modifierLabelmap = vtkSegmentationCore.vtkOrientedImageData()
+      modifierLabelmap.DeepCopy(self.originalSelectedSegmentLabelmap)
+      self.originalSelectedSegmentLabelmap = None
       segmentationNode = self.scriptedEffect.parameterSetNode().GetSegmentationNode()
-      slicer.vtkSlicerSegmentationsModuleLogic.SetBinaryLabelmapToSegment(self.originalSelectedSegmentLabelmap, segmentationNode, self.selectedSegmentId, slicer.vtkSlicerSegmentationsModuleLogic.MODE_REPLACE, self.originalSelectedSegmentLabelmap.GetExtent())
+      slicer.vtkSlicerSegmentationsModuleLogic.SetBinaryLabelmapToSegment(modifierLabelmap, segmentationNode, self.selectedSegmentId, slicer.vtkSlicerSegmentationsModuleLogic.MODE_REPLACE, modifierLabelmap.GetExtent())
 
-    self.originalSelectedSegmentLabelmap = None
     self.selectedSegmentId = None
     self.fm = None
 
     self.updateGUIFromMRML()
+
+  def deactivate(self):
+    self.reset()
 
   def onCancel(self):
     self.reset()
